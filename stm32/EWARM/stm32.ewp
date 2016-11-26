@@ -981,6 +981,9 @@
       <file>
         <name>$PROJ_DIR$\..\Src\stm32f1xx_it.c</name>
       </file>
+      <file>
+        <name>$PROJ_DIR$\..\Src\uart.c</name>
+      </file>
     </group>
   </group>
   <group>

@@ -35,6 +35,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "uart.h"
+#include "cli.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -83,7 +84,7 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  uart_start(&huart1);
+  uart_init(&huart1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -93,10 +94,7 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-    if (g_uart_rx_completed) {
-      uart_tx_string(g_uart_rx_buff, g_uart_rx_len);
-      uart_rx_reset();
-    }
+    cli_process();
   }
   /* USER CODE END 3 */
 

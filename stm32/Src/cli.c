@@ -4,44 +4,27 @@
 #include "main.h"
 #include "leds.h"
 #include "bh1750.h"
+#include "config.h"
 
-#define STRZ_LEN(str) (sizeof(str)-1)
+#include <string.h>
 
 #define TEST
 
-static const char s_cli_info[] = "LED clock terminal. Commands available:\n"
-" t          get time\n"
-" t hh mm ss set time\n"
-" x          get lux-meter reading\n"
+static const char s_cli_info[] =
+"LED clock terminal. Commands available:" CLI_EOL
+" t          get time"              CLI_EOL
+" t hh mm ss set time"              CLI_EOL
+" x          get lux-meter reading" CLI_EOL
 #ifdef TEST
-" l          clear LEDs\n"
-" l n r g b  setup n-th LED\n"
-" @<string>  echo test\n"
+" l          clear LEDs"            CLI_EOL
+" l n r g b  setup n-th LED"        CLI_EOL
+" @<string>  echo test"             CLI_EOL
 #endif
-" ?          this help\n"
+" c          print config"          CLI_EOL
+" <xx>=<val> set config value"      CLI_EOL
+" c?         config help"           CLI_EOL
+" ?          this help"             CLI_EOL
 ;
-
-#define CLI_EOL "\n"
-#define CLI_OK CLI_EOL
-#define CLI_ERR "err" CLI_EOL
-
-static inline void cli_ok(void)
-{
-	uart_tx_string(CLI_OK, STRZ_LEN(CLI_OK));
-}
-
-static inline void cli_err(void)
-{
-	uart_tx_string(CLI_ERR, STRZ_LEN(CLI_ERR));
-}
-
-static inline void cli_resp(HAL_StatusTypeDef res)
-{
-	if (res == HAL_OK)
-		cli_ok();
-	else
-		cli_err();
-}
 
 static void cli_get_time(void)
 {
@@ -50,7 +33,7 @@ static void cli_get_time(void)
 	if (res != HAL_OK)
 		cli_err();
 	else
-		uart_printf("%02u %02u %02u", time.Hours, time.Minutes, time.Seconds);
+		uart_printf("%02u %02u %02u" CLI_EOL, time.Hours, time.Minutes, time.Seconds);
 }
 
 static void cli_set_time(unsigned h, unsigned m, unsigned s)
@@ -92,7 +75,7 @@ static void cli_led(void)
 
 void cli_process(void)
 {
-	char cmd;
+	char cmd, *ptr;
 	if (!g_uart_rx_completed)
 		return;
 	BUG_ON(!g_uart_rx_len);
@@ -112,10 +95,20 @@ void cli_process(void)
 		uart_tx_string(g_uart_rx_buff, g_uart_rx_len);
 		break;
 #endif
+	case 'c':
+		if (g_uart_rx_buff[1] == '?')
+			cfg_cli_info();
+		else
+			cfg_cli_show();
+		break;
 	case '?':
 		uart_tx_string(s_cli_info, STRZ_LEN(s_cli_info));
 		break;
 	default:
-		uart_printf("invalid command '%c'", cmd);
+		if ((ptr = strchr(g_uart_rx_buff, '='))) {
+			*ptr = 0;
+			cfg_cli_set(g_uart_rx_buff, ptr + 1);
+		} else
+			uart_printf("invalid command '%c'" CLI_EOL, cmd);
 	}
 }

@@ -78,6 +78,20 @@ void uart_tx_string(const char* str, unsigned len)
 	uart_flush();
 }
 
+void uart_printf_(const char* fmt, ...)
+{
+	int len;
+	int space = UART_BUFF_SZ - g_uart_tx_len;
+	va_list args;
+	va_start(args, fmt);
+	BUG_ON(space < 0);
+	BUG_ON(g_uart_tx_busy);
+	len = vsnprintf(g_uart_tx_buff + g_uart_tx_len, space, fmt, args);
+	BUG_ON(len >= space);
+	g_uart_tx_len += len;
+	va_end(args);
+}
+
 void uart_printf(const char* fmt, ...)
 {
 	int len;

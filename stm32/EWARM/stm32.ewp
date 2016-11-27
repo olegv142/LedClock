@@ -979,6 +979,12 @@
         <name>$PROJ_DIR$\..\Src\cli.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Src\config.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Src\flash.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Src\leds.c</name>
       </file>
       <file>
@@ -1010,6 +1016,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_cortex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_crc.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_dma.c</name>

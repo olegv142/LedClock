@@ -1,8 +1,8 @@
 #pragma once
 
-#include "stm32f1xx_hal.h"
+#include "platform.h"
 
-#define UART_BUFF_SZ 0x100
+#define UART_BUFF_SZ 0x1000
 
 extern char g_uart_rx_buff[UART_BUFF_SZ+1];
 extern char g_uart_tx_buff[UART_BUFF_SZ+1];
@@ -16,6 +16,7 @@ void uart_init(UART_HandleTypeDef* h);
 
 void uart_tx_string(const char* str, unsigned len);
 void uart_printf(const char* fmt, ...);
+void uart_printf_(const char* fmt, ...);
 int  uart_scanf(const char* fmt, ...);
 
 void uart_tx_flush(void);

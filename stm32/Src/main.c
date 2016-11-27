@@ -37,10 +37,13 @@
 #include "uart.h"
 #include "leds.h"
 #include "cli.h"
+#include "config.h"
 #include "bh1750.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+CRC_HandleTypeDef hcrc;
+
 I2C_HandleTypeDef hi2c1;
 
 RTC_HandleTypeDef hrtc;
@@ -64,6 +67,7 @@ static void MX_RTC_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_CRC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -95,8 +99,10 @@ int main(void)
   MX_USART1_UART_Init();
   MX_SPI2_Init();
   MX_I2C1_Init();
+  MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
+  cfg_init();
   uart_init(&huart1);
   leds_init(&hspi2);
   bh1750init(&hi2c1);
@@ -160,6 +166,18 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* CRC init function */
+static void MX_CRC_Init(void)
+{
+
+  hcrc.Instance = CRC;
+  if (HAL_CRC_Init(&hcrc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
 }
 
 /* I2C1 init function */

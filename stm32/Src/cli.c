@@ -3,20 +3,27 @@
 #include "debug.h"
 #include "main.h"
 #include "leds.h"
+#include "bh1750.h"
 
 #define STRZ_LEN(str) (sizeof(str)-1)
+
+#define TEST
 
 static const char s_cli_info[] = "LED clock terminal. Commands available:\n"
 " t          get time\n"
 " t hh mm ss set time\n"
+" x          get lux-meter reading\n"
+#ifdef TEST
 " l          clear LEDs\n"
 " l n r g b  setup n-th LED\n"
-" ?          this help\n"
 " @<string>  echo test\n"
+#endif
+" ?          this help\n"
 ;
 
-#define CLI_OK "\n"
-#define CLI_ERR "err\n"
+#define CLI_EOL "\n"
+#define CLI_OK CLI_EOL
+#define CLI_ERR "err" CLI_EOL
 
 static inline void cli_ok(void)
 {
@@ -62,6 +69,13 @@ static void cli_time(void)
 		cli_get_time();
 }
 
+static void cli_lux(void)
+{
+	uart_printf("%d" CLI_EOL, bh1750read());
+}
+
+#ifdef TEST
+
 static void cli_led(void)
 {
 	unsigned n, r, g, b;
@@ -74,6 +88,8 @@ static void cli_led(void)
 	cli_ok();
 }
 
+#endif
+
 void cli_process(void)
 {
 	char cmd;
@@ -85,14 +101,19 @@ void cli_process(void)
 	case 't':
 		cli_time();
 		break;
+	case 'x':
+		cli_lux();
+		break;
+#ifdef TEST
 	case 'l':
 		cli_led();
 		break;
-	case '?':
-		uart_tx_string(s_cli_info, STRZ_LEN(s_cli_info));
-		break;
 	case '@':
 		uart_tx_string(g_uart_rx_buff, g_uart_rx_len);
+		break;
+#endif
+	case '?':
+		uart_tx_string(s_cli_info, STRZ_LEN(s_cli_info));
 		break;
 	default:
 		uart_printf("invalid command '%c'", cmd);

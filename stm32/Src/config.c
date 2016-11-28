@@ -119,6 +119,12 @@ static void cfg_rgb_print(struct config const* cfg, struct config_item_tag const
 	uart_printf_("%s=%u %u %u " CLI_EOL, t->name, ptr->r, ptr->g, ptr->b);
 }
 
+static void cfg_hm_print(struct config const* cfg, struct config_item_tag const* t)
+{
+	struct hm const* ptr = (struct hm const*)((char const*)cfg + t->offset);
+	uart_printf_("%s=%u %u " CLI_EOL, t->name, ptr->h, ptr->m);
+}
+
 static void cfg_u16_print(struct config const* cfg, struct config_item_tag const* t)
 {
 	uint16_t const* ptr = (uint16_t const*)((char const*)cfg + t->offset);
@@ -134,6 +140,17 @@ static int cfg_rgb_scan(struct config* cfg, struct config_item_tag const* t, con
 	ptr->r = r;
 	ptr->g = g;
 	ptr->b = b;
+	return 0;
+}
+
+static int cfg_hm_scan(struct config* cfg, struct config_item_tag const* t, const char* str)
+{
+	unsigned h = 0, m = 0;
+	struct hm* ptr = (struct hm*)((char*)cfg + t->offset);
+	if (2 != sscanf(str, "%u %u", &h, &m))
+		return -1;
+	ptr->h = h;
+	ptr->m = m;
 	return 0;
 }
 
@@ -153,6 +170,8 @@ static struct config_item_tag s_cfg_tags[] = {
 	CFG_ITEM(hh, "r g b  - set hour hand color",    cfg_rgb_print, cfg_rgb_scan),
 	CFG_ITEM(mh, "r g b  - set minutes hand color", cfg_rgb_print, cfg_rgb_scan),
 	CFG_ITEM(sh, "r g b  - set seconds hand color", cfg_rgb_print, cfg_rgb_scan),
+	CFG_ITEM(srt,"h m    - set sunrise time",       cfg_hm_print, cfg_hm_scan),
+	CFG_ITEM(sr, "mins   - set sunrise duration in minutes (0 if disabled)", cfg_u16_print, cfg_u16_scan),
 	CFG_ITEM(se, "0|1    - disable (0) or enable (1) seconds hand", cfg_u16_print, cfg_u16_scan),
 	CFG_ITEM(xh, "value  - set lux-meter high threshold", cfg_u16_print, cfg_u16_scan),
 	CFG_ITEM(xl, "value  - set lux-meter low  threshold", cfg_u16_print, cfg_u16_scan),

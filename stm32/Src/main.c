@@ -76,6 +76,24 @@ static void MX_CRC_Init(void);
 
 /* USER CODE BEGIN 0 */
 
+#define RTC_USE_BATT
+
+#ifdef RTC_USE_BATT
+static inline HAL_StatusTypeDef dont_set_time(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *sTime, uint32_t Format)
+{
+	return HAL_OK;
+}
+
+static inline HAL_StatusTypeDef dont_set_date(RTC_HandleTypeDef *hrtc, RTC_DateTypeDef *sDate, uint32_t Format)
+{
+	return HAL_OK;
+}
+
+// Skip setting time & date if battery powered
+#define HAL_RTC_SetTime(h, time, fmt) dont_set_time(h, time, fmt)
+#define HAL_RTC_SetDate(h, time, fmt) dont_set_date(h, time, fmt)
+#endif
+
 /* USER CODE END 0 */
 
 int main(void)

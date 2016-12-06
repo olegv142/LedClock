@@ -22,7 +22,8 @@ static struct config s_cfg_default = {
 	.se = 1,
 	.al = 5,
 	.ah = 1000,
-	.ab = 10000,
+	.bl = -10000,
+	.bh = 10000,
 };
 
 //------------- Configuration storage ---------------------
@@ -127,10 +128,16 @@ static void cfg_hm_print(struct config const* cfg, struct config_item_tag const*
 	uart_printf_("%s=%u %u " CLI_EOL, t->name, ptr->h, ptr->m);
 }
 
-static void cfg_u16_print(struct config const* cfg, struct config_item_tag const* t)
+static void cfg_uint_print(struct config const* cfg, struct config_item_tag const* t)
 {
-	uint16_t const* ptr = (uint16_t const*)((char const*)cfg + t->offset);
+	unsigned const* ptr = (unsigned const*)((char const*)cfg + t->offset);
 	uart_printf_("%s=%u " CLI_EOL, t->name, *ptr);
+}
+
+static void cfg_int_print(struct config const* cfg, struct config_item_tag const* t)
+{
+	int const* ptr = (int const*)((char const*)cfg + t->offset);
+	uart_printf_("%s=%d " CLI_EOL, t->name, *ptr);
 }
 
 static int cfg_rgb_scan(struct config* cfg, struct config_item_tag const* t, const char* str)
@@ -156,11 +163,21 @@ static int cfg_hm_scan(struct config* cfg, struct config_item_tag const* t, cons
 	return 0;
 }
 
-static int cfg_u16_scan(struct config* cfg, struct config_item_tag const* t, const char* str)
+static int cfg_uint_scan(struct config* cfg, struct config_item_tag const* t, const char* str)
 {
 	unsigned v = 0;
-	uint16_t* ptr = (uint16_t*)((char*)cfg + t->offset);
+	unsigned* ptr = (unsigned*)((char*)cfg + t->offset);
 	if (1 != sscanf(str, "%u", &v))
+		return -1;
+	*ptr = v;
+	return 0;
+}
+
+static int cfg_int_scan(struct config* cfg, struct config_item_tag const* t, const char* str)
+{
+	int v = 0;
+	int* ptr = (int*)((char*)cfg + t->offset);
+	if (1 != sscanf(str, "%d", &v))
 		return -1;
 	*ptr = v;
 	return 0;
@@ -173,11 +190,12 @@ static struct config_item_tag s_cfg_tags[] = {
 	CFG_ITEM(mh, "r g b  - set minutes hand color", cfg_rgb_print, cfg_rgb_scan),
 	CFG_ITEM(sh, "r g b  - set seconds hand color", cfg_rgb_print, cfg_rgb_scan),
 	CFG_ITEM(srt,"h m    - set sunrise time",       cfg_hm_print, cfg_hm_scan),
-	CFG_ITEM(sr, "mins   - set sunrise duration in minutes (0 if disabled)", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(se, "0|1    - disable (0) or enable (1) seconds hand", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(al, "value  - set ambient light low  threshold", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(ah, "value  - set ambient light high threshold", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(ab, "value  - set ambient light high threshold for background", cfg_u16_print, cfg_u16_scan),
+	CFG_ITEM(sr, "mins   - set sunrise duration in minutes (0 if disabled)", cfg_uint_print, cfg_uint_scan),
+	CFG_ITEM(se, "0|1    - disable (0) or enable (1) seconds hand", cfg_uint_print, cfg_uint_scan),
+	CFG_ITEM(al, "value  - set ambient light low  threshold", cfg_uint_print, cfg_uint_scan),
+	CFG_ITEM(ah, "value  - set ambient light high threshold", cfg_uint_print, cfg_uint_scan),
+	CFG_ITEM(bl, "value  - set background low  threshold", cfg_int_print, cfg_int_scan),
+	CFG_ITEM(bh, "value  - set background high threshold", cfg_uint_print, cfg_uint_scan),
 };
 
 void cfg_cli_info(void)

@@ -20,11 +20,12 @@ struct config {
 	struct rgb mh;  // minutes hand color
 	struct rgb sh;  // seconds hand color
 	struct hm  srt; // sunrise time
-	uint16_t   sr;  // sunrise duration in minutes (0 if disabled)
-	uint16_t   se;  // seconds enable
-	uint16_t   al;  // ambient light low threshold
-	uint16_t   ah;  // ambient light high threshold
-	uint16_t   ab;  // ambient light high threshold for background
+	unsigned   sr;  // sunrise duration in minutes (0 if disabled)
+	unsigned   se;  // seconds enable
+	unsigned   al;  // ambient light low threshold
+	unsigned   ah;  // ambient light high threshold
+	int        bl;  // background low threshold
+	unsigned   bh;  // background high threshold
 	uint32_t   gen; // generation number
 	uint32_t   crc; // checksum
 };

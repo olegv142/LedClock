@@ -48,36 +48,40 @@ static int mins_elapsed(RTC_TimeTypeDef const* fr, RTC_TimeTypeDef const* to)
 	return elapsed;
 }
 
-static inline uint8_t adjust_color(uint8_t c, unsigned al, unsigned ah, int bright)
+static inline uint8_t adjust_color(uint8_t c, int al, unsigned ah)
 {
 	if (c) {
-		unsigned a = amb_light() + 1; // just to avoid div by zero
-		unsigned v = c * (a + al), d = a + ah;
-		if (bright) {
-			v = v + ah - al; // so v >= d
+		int a = amb_light() + 1; // just to avoid div by zero
+		int v = c * (a + al);
+		if (v <= 0) {
+			return 0;
 		}
-		return v / d;
+		v /= (a + ah);
+		if (al >= 0) {
+			v += 1; // so v > 0
+		}
+		return v;
 	} else
 		return 0;
 }
 
-static inline void set_led_color(unsigned i, struct rgb const* c, unsigned al, unsigned ah, int bright)
+static inline void set_led_color(unsigned i, struct rgb const* c, int al, unsigned ah)
 {
 	leds_set(i,
-		adjust_color(c->r, al, ah, bright),
-		adjust_color(c->g, al, ah, bright),
-		adjust_color(c->b, al, ah, bright)
+		adjust_color(c->r, al, ah),
+		adjust_color(c->g, al, ah),
+		adjust_color(c->b, al, ah)
 	);
 }
 
 static inline void set_bkg(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->bk, cfg->al, cfg->ab, 0);
+	set_led_color(i, &cfg->bk, cfg->bl, cfg->bh);
 }
 
 static inline void set_hm(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->hm, cfg->al, cfg->ah, 1);
+	set_led_color(i, &cfg->hm, cfg->al, cfg->ah);
 }
 
 static inline void update_bk(unsigned fr, unsigned to, struct config const* cfg)
@@ -97,17 +101,17 @@ static inline void update_bk(unsigned fr, unsigned to, struct config const* cfg)
 
 static inline void set_hh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->hh, cfg->al, cfg->ah, 1);
+	set_led_color(i, &cfg->hh, cfg->al, cfg->ah);
 }
 
 static inline void set_mh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->mh, cfg->al, cfg->ah, 1);
+	set_led_color(i, &cfg->mh, cfg->al, cfg->ah);
 }
 
 static inline void set_sh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->sh, cfg->al, cfg->ah, 1);
+	set_led_color(i, &cfg->sh, cfg->al, cfg->ah);
 }
 
 static inline int get_hh_pos(RTC_TimeTypeDef const* t)

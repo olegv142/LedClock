@@ -14,21 +14,23 @@ BUILD_BUG_ON(offsetof(struct config, crc) % sizeof(uint32_t));
 BUILD_BUG_ON(sizeof(struct config) > FLASH_PAGE_SIZE);
 
 static struct config s_cfg_default = {
-	.hm = {0, 10, 10},
-	.hh = {0, 0, 100},
-	.mh = {0, 100, 0},
-	.sh = {50, 50, 0},
+	.bk = {100, 50, 50},
+	.hm = {100, 0, 100},
+	.hh = {0, 0, 255},
+	.mh = {0, 255, 0},
+	.sh = {150, 150, 0},
 	.se = 1,
-	.xh = 100,
-	.xl = 10,	
+	.al = 5,
+	.ah = 1000,
+	.ab = 10000,
 };
 
 //------------- Configuration storage ---------------------
 
 #define PAGE_ADDR(n) (FLASH_BASE+n*FLASH_PAGE_SIZE)
 
-static __no_init __root uint8_t const s_cfg_page_1[FLASH_PAGE_SIZE] @ PAGE_ADDR(1);
-static __no_init __root uint8_t const s_cfg_page_2[FLASH_PAGE_SIZE] @ PAGE_ADDR(2);
+static __root uint8_t const s_cfg_page_1[FLASH_PAGE_SIZE] @ PAGE_ADDR(1);
+static __root uint8_t const s_cfg_page_2[FLASH_PAGE_SIZE] @ PAGE_ADDR(2);
 
 static unsigned s_cfg_page_addr[2] = {PAGE_ADDR(1), PAGE_ADDR(2)};
 static int      s_cfg_idx = -1;
@@ -173,8 +175,9 @@ static struct config_item_tag s_cfg_tags[] = {
 	CFG_ITEM(srt,"h m    - set sunrise time",       cfg_hm_print, cfg_hm_scan),
 	CFG_ITEM(sr, "mins   - set sunrise duration in minutes (0 if disabled)", cfg_u16_print, cfg_u16_scan),
 	CFG_ITEM(se, "0|1    - disable (0) or enable (1) seconds hand", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(xh, "value  - set lux-meter high threshold", cfg_u16_print, cfg_u16_scan),
-	CFG_ITEM(xl, "value  - set lux-meter low  threshold", cfg_u16_print, cfg_u16_scan),
+	CFG_ITEM(al, "value  - set ambient light low  threshold", cfg_u16_print, cfg_u16_scan),
+	CFG_ITEM(ah, "value  - set ambient light high threshold", cfg_u16_print, cfg_u16_scan),
+	CFG_ITEM(ab, "value  - set ambient light high threshold for background", cfg_u16_print, cfg_u16_scan),
 };
 
 void cfg_cli_info(void)

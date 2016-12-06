@@ -1065,6 +1065,9 @@
         <name>$PROJ_DIR$\..\Src\cli.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Src\clock.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Src\config.c</name>
       </file>
       <file>

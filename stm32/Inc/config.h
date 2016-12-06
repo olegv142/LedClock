@@ -22,8 +22,9 @@ struct config {
 	struct hm  srt; // sunrise time
 	uint16_t   sr;  // sunrise duration in minutes (0 if disabled)
 	uint16_t   se;  // seconds enable
-	uint16_t   xh;  // lux-meter high threshold
-	uint16_t   xl;  // lux-meter low threshold
+	uint16_t   al;  // ambient light low threshold
+	uint16_t   ah;  // ambient light high threshold
+	uint16_t   ab;  // ambient light high threshold for background
 	uint32_t   gen; // generation number
 	uint32_t   crc; // checksum
 };

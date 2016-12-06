@@ -3,18 +3,18 @@
 #include "debug.h"
 #include "main.h"
 #include "leds.h"
-#include "bh1750.h"
 #include "config.h"
+#include "clock.h"
 
 #include <string.h>
 
-#define TEST
+//#define TEST
 
 static const char s_cli_info[] =
 "LED clock terminal. Commands available:" CLI_EOL
 " t          get time"              CLI_EOL
 " t hh mm ss set time"              CLI_EOL
-" x          get lux-meter reading" CLI_EOL
+" a          get ambient light"     CLI_EOL
 #ifdef TEST
 " l          clear LEDs"            CLI_EOL
 " l n r g b  setup n-th LED"        CLI_EOL
@@ -52,9 +52,9 @@ static void cli_time(void)
 		cli_get_time();
 }
 
-static void cli_lux(void)
+static void cli_amb(void)
 {
-	uart_printf("%d" CLI_EOL, bh1750read());
+	uart_printf("%u" CLI_EOL, clk_amb_light());
 }
 
 #ifdef TEST
@@ -84,8 +84,8 @@ void cli_process(void)
 	case 't':
 		cli_time();
 		break;
-	case 'x':
-		cli_lux();
+	case 'a':
+		cli_amb();
 		break;
 #ifdef TEST
 	case 'l':

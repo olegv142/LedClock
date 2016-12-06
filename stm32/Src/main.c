@@ -37,6 +37,7 @@
 #include "uart.h"
 #include "leds.h"
 #include "cli.h"
+#include "clock.h"
 #include "config.h"
 #include "bh1750.h"
 /* USER CODE END Includes */
@@ -124,6 +125,7 @@ int main(void)
   uart_init(&huart1);
   leds_init(&hspi2);
   bh1750init(&hi2c1);
+  clk_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -134,6 +136,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
     cli_process();
+    clk_process();
   }
   /* USER CODE END 3 */
 

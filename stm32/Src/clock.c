@@ -6,6 +6,7 @@
 #include "debug.h"
 
 static RTC_TimeTypeDef s_last_time;
+static unsigned s_amb_light_last;
 static unsigned s_amb_light_avg;
 
 static inline unsigned amb_light(void)
@@ -16,14 +17,20 @@ static inline unsigned amb_light(void)
 static inline void amb_light_up(int a)
 {
 	if (a < 0) {
-		s_amb_light_avg = 0;
+		s_amb_light_last = s_amb_light_avg = 0;
 		return;
 	}
+	s_amb_light_last = a;
 	s_amb_light_avg += a;
 	s_amb_light_avg -= amb_light();
 }
 
-unsigned clk_amb_light(void)
+unsigned clk_amb_light_last(void)
+{
+	return s_amb_light_last;
+}
+
+unsigned clk_amb_light_avg(void)
 {
 	return amb_light();
 }

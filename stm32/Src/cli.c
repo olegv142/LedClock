@@ -54,7 +54,7 @@ static void cli_time(void)
 
 static void cli_amb(void)
 {
-	uart_printf("%u" CLI_EOL, clk_amb_light());
+	uart_printf("%u %u" CLI_EOL, clk_amb_light_last(), clk_amb_light_avg());
 }
 
 #ifdef TEST

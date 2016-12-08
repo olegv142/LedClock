@@ -15,15 +15,15 @@ BUILD_BUG_ON(sizeof(struct config) > FLASH_PAGE_SIZE);
 
 static struct config s_cfg_default = {
 	.bk = {100, 50, 50},
-	.hm = {100, 0, 100},
+	.hm = {50, 0, 0},
 	.hh = {0, 0, 255},
 	.mh = {0, 255, 0},
 	.sh = {150, 150, 0},
 	.se = 1,
 	.al = 5,
 	.ah = 1000,
-	.bl = -10000,
-	.bh = 10000,
+	.bl = -5000,
+	.bh = 50000,
 };
 
 //------------- Configuration storage ---------------------

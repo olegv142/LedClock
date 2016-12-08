@@ -65,53 +65,54 @@ static inline uint8_t adjust_color(uint8_t c, int al, unsigned ah)
 		return 0;
 }
 
-static inline void set_led_color(unsigned i, struct rgb const* c, int al, unsigned ah)
+static inline void update_bk(struct config const* cfg)
 {
-	leds_set(i,
-		adjust_color(c->r, al, ah),
-		adjust_color(c->g, al, ah),
-		adjust_color(c->b, al, ah)
-	);
-}
+	// background color
+	uint8_t bk_r = adjust_color(cfg->bk.r, cfg->bl, cfg->bh);
+	uint8_t bk_g = adjust_color(cfg->bk.g, cfg->bl, cfg->bh);
+	uint8_t bk_b = adjust_color(cfg->bk.b, cfg->bl, cfg->bh);
+	// hour marks color
+	uint8_t hm_r = adjust_color(cfg->hm.r, cfg->al, cfg->ah);
+	uint8_t hm_g = adjust_color(cfg->hm.g, cfg->al, cfg->ah);
+	uint8_t hm_b = adjust_color(cfg->hm.b, cfg->al, cfg->ah);
 
-static inline void set_bkg(unsigned i, struct config const* cfg)
-{
-	set_led_color(i, &cfg->bk, cfg->bl, cfg->bh);
-}
-
-static inline void set_hm(unsigned i, struct config const* cfg)
-{
-	set_led_color(i, &cfg->hm, cfg->al, cfg->ah);
-}
-
-static inline void update_bk(unsigned fr, unsigned to, struct config const* cfg)
-{
-	while (fr != to)
+	int i, next_hm = 0;
+	for (i = 0; i < 60; ++i)
 	{
-		if (!(fr % 5)) {
-			set_hm(fr, cfg);
+		if (i == next_hm) {
+			leds_set(i, hm_r, hm_g, hm_b);
+			next_hm += 5;
 		} else {
-			set_bkg(fr, cfg);
-		}
-		if (++fr >= 60) {
-			fr -= 60;
+			leds_set(i, bk_r, bk_g, bk_b);
 		}
 	}
 }
 
 static inline void set_hh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->hh, cfg->al, cfg->ah);
+	leds_set(i,
+		adjust_color(cfg->hh.r, cfg->al, cfg->ah),
+		adjust_color(cfg->hh.g, cfg->al, cfg->ah),
+		adjust_color(cfg->hh.b, cfg->al, cfg->ah)
+	);
 }
 
 static inline void set_mh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->mh, cfg->al, cfg->ah);
+	leds_set(i,
+		adjust_color(cfg->mh.r, cfg->al, cfg->ah),
+		adjust_color(cfg->mh.g, cfg->al, cfg->ah),
+		adjust_color(cfg->mh.b, cfg->al, cfg->ah)
+	);
 }
 
 static inline void set_sh(unsigned i, struct config const* cfg)
 {
-	set_led_color(i, &cfg->sh, cfg->al, cfg->ah);
+	leds_set(i,
+		adjust_color(cfg->sh.r, cfg->al, cfg->ah),
+		adjust_color(cfg->sh.g, cfg->al, cfg->ah),
+		adjust_color(cfg->sh.b, cfg->al, cfg->ah)
+	);
 }
 
 static inline int get_hh_pos(RTC_TimeTypeDef const* t)
@@ -128,16 +129,12 @@ static void clk_update(RTC_TimeTypeDef const* t)
 	int srt_elapsed = mins_elapsed(&srt, t);
 	int hh = get_hh_pos(t);
 
-	update_bk(s_last_time.Seconds, t->Seconds, cfg);
-	update_bk(s_last_time.Minutes, t->Minutes, cfg);
-	update_bk(get_hh_pos(&s_last_time), hh, cfg);
-
+	update_bk(cfg);
+	set_hh(hh, cfg);
+	set_mh(t->Minutes, cfg);
 	if (cfg->se) {
 		set_sh(t->Seconds, cfg);
 	}
-	set_mh(t->Minutes, cfg);
-	set_hh(hh, cfg);
-
 	leds_flush();
 
 	s_last_time = *t;

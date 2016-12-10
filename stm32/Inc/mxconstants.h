@@ -43,6 +43,8 @@
 
 #define NLED_Pin GPIO_PIN_13
 #define NLED_GPIO_Port GPIOC
+#define XRST_Pin GPIO_PIN_12
+#define XRST_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

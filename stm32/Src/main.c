@@ -121,6 +121,7 @@ int main(void)
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
+  HAL_Delay(500);
   cfg_init();
   uart_init(&huart1);
   leds_init(&hspi2);
@@ -337,11 +338,20 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(NLED_GPIO_Port, NLED_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(XRST_GPIO_Port, XRST_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : NLED_Pin */
   GPIO_InitStruct.Pin = NLED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(NLED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : XRST_Pin */
+  GPIO_InitStruct.Pin = XRST_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(XRST_GPIO_Port, &GPIO_InitStruct);
 
 }
 

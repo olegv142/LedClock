@@ -16,6 +16,8 @@ void bh1750init(I2C_HandleTypeDef* port)
 	uint8_t cmd_mode = CMD_CONT_HR2_MODE;
 	HAL_StatusTypeDef res;
 	s_bh1750_port = port;
+    HAL_GPIO_WritePin(XRST_GPIO_Port, XRST_Pin, GPIO_PIN_SET);
+    HAL_Delay(10);
 	res = HAL_I2C_Master_Transmit(port, I2C_ADDR, &cmd_pw_on, 1, TOUT);
 	BUG_ON(res != HAL_OK);
 	HAL_Delay(10);
